@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Florida Area</title>
+
+  <!-- 然后加载 Google Maps API -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqiyp0YPRVcCHNibm2Lgr8KddN5NbcgS8" defer></script>
+  <script th:src="@{/js/mapBase.js}" defer></script>
+  <script th:src="@{/js/tmcModule.js}" defer></script>
+  <script th:src="@{/js/tubeModule.js}" defer></script>
+
+</head>
+<body style="padding: 0; margin: 0;">
+<!-- 地图容器 -->
+<div id="map" style="width: 100vw; height: 100vh; z-index: 1;"></div>
+<button id="addMarkerBtn" style="position: absolute; bottom: 10px; right: 10px; z-index: 2;">Add TMC</button>
+<!-- 新增的Add TubeCount按钮 -->
+<button id="addTubeCountBtn" style="position: absolute; bottom: 50px; right: 10px; z-index: 2;">Add TubeCount</button>
+
+</body>
+</html>

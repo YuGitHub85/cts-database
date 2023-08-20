@@ -1,0 +1,85 @@
+#version: "3"
+#services:
+#  springboot-app:
+#   # container_name: spring-app
+#    image: springbooot-app
+#    restart: always
+#    build: .
+#    ports:
+#      - 8080:8080
+#    environment:
+#      MYSQL_HOST: mysqldb
+#      MYSQL_USER: root
+#      MYSQL_PASSWORD: password
+#      MYSQL_PORT: 3306
+#  mysqldb:
+#    container_name: mysqldb
+#    image: mysql
+##    volumes:
+##      -  /home/user/Desktop/db:/var/lib/mysql
+#    ports:
+#     - 6033:3306
+#    environment:
+#      MYSQL_DATABASE: test
+#      MYSQL_ROOT_PASSWORD: password
+
+
+version: "0.0.1"
+services:
+  cts:
+    image: cts:0.0.1-beta
+    container_name: cts
+    hostname: cts
+    build: .
+    environment:
+#      QUARKUS_DATASOURCE_JDBC_URL: jdbc:mysql://cts-db:3306/test?createDatabaseIfNotExist=true
+      MYSQL_JDBC_URL: jdbc:mysql://cts-db:3306/test?createDatabaseIfNotExist=true
+      MYSQL_USER: root
+      MYSQL_PASSWORD: password
+#      MYSQL_PORT: 3306
+#      QUARKUS_DATASOURCE__DATASOURCE_NAME__DB_KIND: mysql
+    ports:
+      - 8911:8080
+    networks:
+      - cts-link
+    depends_on:
+      cts-db:
+        condition: service_healthy
+    healthcheck:
+      test: curl -f http://localhost:8080/actuator/health || exit 1
+      start_period: 1s
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+
+  cts-db:
+    image: mysql:latest
+    container_name: cts-db
+    hostname: cts-db
+    restart: always
+    ports:
+      - 6033:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_INITDB_SKIP_TZINFO: 1
+      MYSQL_MAX_ALLOWED_PACKET: 100M  # 设置max_allowed_packet的值
+      MYSQL_NET_BUFFER_LENGTH: 16384  # 设置net_buffer_length的值
+    volumes:
+      - ./metabase-initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u root --password=password
+      start_period: 1s
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cts-link
+networks:
+  cts-link:
+    name: cts-link
+
+volumes:
+  mysql-data:
+
